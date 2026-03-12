@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Japan 2025 — Joe & Beth</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f0f2f5;
+    --white: #ffffff;
+    --dark: #111827;
+    --dark2: #1f2937;
+    --dark3: #374151;
+    --gray1: #6b7280;
+    --gray2: #9ca3af;
+    --gray3: #d1d5db;
+    --gray4: #e5e7eb;
+    --gray5: #f3f4f6;
+    --gray6: #f8f9fb;
+    --border: #eef0f4;
+    --blue: #3b82f6;
+    --blue-light: #eff6ff;
+    --blue-mid: #dbeafe;
+    --purple: #8b5cf6;
+    --green: #10b981;
+    --red: #ef4444;
+    --amber: #f59e0b;
+    --shadow-sm: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
+    --shadow-md: 0 2px 8px rgba(0,0,0,0.08), 0 8px 28px rgba(0,0,0,0.06);
+    --radius: 18px;
+    --radius-sm: 10px;
+    --radius-xs: 6px;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--dark);
+    min-height: 100vh;
+    padding-bottom: 90px;
+  }
+  ::-webkit-scrollbar { width: 5px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--gray4); border-radius: 3px; }
+  input, textarea, select, button { font-family: 'DM Sans', sans-serif; outline: none; }
+  input::placeholder, textarea::placeholder { color: var(--gray3); }
+
+  /* ── Header ── */
+  .header {
+    background: var(--dark);
+    padding: 32px 24px 28px;
+    position: sticky; top: 0; z-index: 50;
+  }
+  .header-inner {
+    max-width: 860px; margin: 0 auto;
+    display: flex; align-items: flex-end;
+    justify-content: space-between; gap: 20px; flex-wrap: wrap;
+  }
+  .header-eyebrow {
+    font-family: 'DM Mono', monospace; font-size: 9px;
+    letter-spacing: 0.22em; color: #4b5563;
+    text-transform: uppercase; margin-bottom: 10px;
+  }
+  .header-title { font-size: 34px; font-weight: 700; color: #f9fafb; letter-spacing: -0.03em; line-height: 1; }
+  .header-sub { margin-top: 8px; font-size: 13px; color: var(--gray1); font-weight: 300; letter-spacing: 0.02em; }
+  .header-chips { display: flex; gap: 10px; flex-wrap: wrap; align-items: flex-start; }
+  .header-chip { background: var(--dark2); border-radius: 12px; padding: 10px 18px; text-align: center; }
+  .chip-label { font-family: 'DM Mono', monospace; font-size: 8px; color: #4b5563; letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 4px; }
+  .chip-value { font-family: 'DM Mono', monospace; font-size: 19px; font-weight: 600; color: #f9fafb; }
+  .chip-value.green { color: #34d399; }
+
+  /* ── Toolbar ── */
+  .toolbar { background: var(--dark2); border-top: 1px solid #2d3748; padding: 10px 24px; }
+  .toolbar-inner { max-width: 860px; margin: 0 auto; display: flex; gap: 8px; align-items: center; }
+  .toolbar-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: var(--dark3); border: 1px solid #4b5563;
+    border-radius: 8px; color: #d1d5db; cursor: pointer;
+    font-size: 11px; font-weight: 500; letter-spacing: 0.04em;
+    padding: 7px 14px; transition: all 0.15s; text-transform: uppercase;
+  }
+  .toolbar-btn:hover { background: #4b5563; color: #fff; }
+  .toolbar-btn.primary { background: var(--blue); border-color: var(--blue); color: #fff; }
+  .toolbar-btn.primary:hover { background: #2563eb; }
+
+  /* ── Main ── */
+  .main { max-width: 860px; margin: 0 auto; padding: 20px 16px; }
+
+  /* ── Day card ── */
+  .day-card {
+    background: var(--white); border-radius: var(--radius);
+    margin-bottom: 14px; overflow: hidden;
+    box-shadow: var(--shadow-sm); transition: box-shadow 0.2s;
+  }
+  .day-card:hover { box-shadow: var(--shadow-md); }
+  .day-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 20px 22px 16px; border-bottom: 1.5px solid var(--gray5);
+    cursor: pointer; user-select: none; gap: 12px;
+  }
+  .day-header-left { flex: 1; min-width: 0; }
+  .day-chip-row { display: flex; align-items: center; margin-bottom: 8px; gap: 10px; }
+  .day-chip {
+    display: inline-flex; align-items: center;
+    background: var(--dark); color: white; border-radius: var(--radius-xs);
+    font-family: 'DM Mono', monospace; font-size: 9px; font-weight: 500;
+    letter-spacing: 0.1em; padding: 3px 9px; text-transform: uppercase;
+  }
+  .day-date { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--gray2); letter-spacing: 0.06em; }
+  .day-city-input {
+    background: transparent; border: none; color: var(--dark);
+    font-size: 21px; font-weight: 700; letter-spacing: -0.02em;
+    text-transform: uppercase; width: 100%;
+  }
+  .day-city-input::placeholder { color: var(--gray4); }
+  .day-header-right { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+  .day-total {
+    font-family: 'DM Mono', monospace; font-size: 13px; font-weight: 500;
+    color: var(--dark3); background: var(--gray5); border-radius: 8px; padding: 4px 12px;
+  }
+  .add-btn {
+    width: 34px; height: 34px; border-radius: 50%;
+    background: var(--dark); border: none; color: white;
+    font-size: 20px; cursor: pointer; display: flex;
+    align-items: center; justify-content: center;
+    transition: background 0.15s, transform 0.1s; flex-shrink: 0; line-height: 1;
+  }
+  .add-btn:hover { background: var(--dark3); transform: scale(1.06); }
+  .collapse-arrow { color: var(--gray3); font-size: 12px; transition: transform 0.2s; }
+  .collapsed .collapse-arrow { transform: rotate(-90deg); }
+
+  /* ── Day body ── */
+  .day-body { padding: 14px 18px 18px; }
+  .free-day-msg {
+    text-align: center; font-family: 'DM Mono', monospace;
+    font-size: 10px; letter-spacing: 0.12em; color: var(--gray3);
+    text-transform: uppercase; padding: 20px;
+  }
+
+  /* ── Entry row ── */
+  .entry-row {
+    background: var(--gray6); border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm); margin-bottom: 8px; overflow: hidden;
+    transition: border-color 0.15s, box-shadow 0.15s;
+    animation: fadeUp 0.18s ease forwards;
+  }
+  .entry-row:hover { border-color: #dde2ec; box-shadow: 0 2px 12px rgba(0,0,0,0.06); }
+  .entry-main {
+    display: flex; align-items: center; gap: 10px;
+    padding: 11px 14px; flex-wrap: wrap;
+  }
+
+  /* Checkboxes */
+  .checkboxes { display: flex; gap: 5px; flex-shrink: 0; }
+  .check-box {
+    width: 20px; height: 20px; border-radius: 5px;
+    border: 2px solid var(--gray3); cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s; flex-shrink: 0; background: transparent;
+  }
+  .check-box.joe.checked  { border-color: var(--blue);   background: var(--blue); }
+  .check-box.beth.checked { border-color: var(--purple); background: var(--purple); }
+  .check-box svg { display: none; }
+  .check-box.checked svg { display: block; }
+
+  .cat-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+  .cat-select {
+    background: transparent; border: none;
+    font-family: 'DM Mono', monospace; font-size: 9px; font-weight: 500;
+    letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer;
+    appearance: none; -webkit-appearance: none; padding-right: 2px;
+  }
+  .cat-select option { background: #fff; color: var(--dark); }
+  .vdivider { width: 1.5px; height: 18px; background: var(--border); flex-shrink: 0; }
+
+  .entry-name {
+    flex: 1; min-width: 100px; background: transparent; border: none;
+    color: var(--dark); font-size: 14px; font-weight: 400;
+  }
+  .price-wrap { display: flex; align-items: center; gap: 3px; flex-shrink: 0; }
+  .price-prefix { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--gray3); }
+  .entry-price {
+    background: transparent; border: none; color: var(--dark);
+    font-family: 'DM Mono', monospace; font-size: 13px; font-weight: 500;
+    width: 78px; text-align: right;
+  }
+  .entry-row.paid-row { background: #f0fdf4; border-color: #bbf7d0; }
+  .paid-badge {
+    display: inline-flex; align-items: center;
+    background: #dcfce7; border: 1px solid #bbf7d0; color: #16a34a;
+    border-radius: 5px; font-family: 'DM Mono', monospace; font-size: 9px;
+    font-weight: 500; letter-spacing: 0.08em; padding: 2px 7px;
+    white-space: nowrap; flex-shrink: 0;
+  }
+
+  .entry-actions { display: flex; gap: 5px; margin-left: auto; flex-shrink: 0; flex-wrap: wrap; }
+  .micro-btn {
+    background: transparent; border: 1.5px solid var(--gray4);
+    border-radius: var(--radius-xs); color: var(--gray2); cursor: pointer;
+    font-size: 10px; font-weight: 500; padding: 3px 9px;
+    transition: all 0.15s; white-space: nowrap; letter-spacing: 0.02em;
+  }
+  .micro-btn:hover { border-color: #c8cdd8; color: var(--gray1); background: #f0f2f5; }
+  .del-btn {
+    background: none; border: none; color: var(--gray3);
+    cursor: pointer; font-size: 16px; padding: 0 2px; line-height: 1; transition: color 0.15s;
+  }
+  .del-btn:hover { color: var(--red); }
+
+  .notes-area {
+    background: transparent; border: none; border-top: 1.5px solid var(--border);
+    color: var(--gray2); font-size: 12px; font-style: italic;
+    width: 100%; resize: none; line-height: 1.6; padding: 9px 14px; display: none;
+  }
+  .notes-area.visible { display: block; animation: fadeUp 0.18s ease; }
+
+  /* ── Day footer ── */
+  .day-footer { display: flex; align-items: center; gap: 10px; margin-top: 10px; flex-wrap: wrap; }
+  .legend { display: flex; gap: 10px; flex: 1; align-items: center; }
+  .legend-item { display: flex; align-items: center; gap: 5px; }
+  .legend-dot { width: 8px; height: 8px; border-radius: 50%; }
+  .legend-label { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--gray2); letter-spacing: 0.06em; }
+  .ghost-btn {
+    background: transparent; border: 1.5px solid var(--gray4);
+    border-radius: 8px; color: var(--gray2); cursor: pointer;
+    font-size: 12px; font-weight: 500; padding: 7px 14px;
+    transition: all 0.15s; white-space: nowrap;
+  }
+  .ghost-btn:hover { border-color: #c8cdd8; color: var(--gray1); background: var(--gray6); }
+
+  /* ── Summary bar ── */
+  .summary-bar {
+    position: fixed; bottom: 0; left: 0; right: 0;
+    background: rgba(255,255,255,0.97);
+    backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+    border-top: 1.5px solid var(--border);
+    display: flex; align-items: stretch; justify-content: center;
+    z-index: 100; box-shadow: 0 -4px 24px rgba(0,0,0,0.06);
+  }
+  .sum-item {
+    display: flex; flex-direction: column; align-items: center;
+    justify-content: center; padding: 12px 22px; gap: 2px;
+  }
+  .sum-divider { width: 1.5px; background: var(--gray5); margin: 10px 0; }
+  .sum-label { font-family: 'DM Mono', monospace; font-size: 8px; letter-spacing: 0.16em; color: var(--gray2); text-transform: uppercase; }
+  .sum-value { font-family: 'DM Mono', monospace; font-size: 17px; font-weight: 600; }
+  .sum-value.total  { color: var(--dark); }
+  .sum-value.joe    { color: var(--blue); }
+  .sum-value.beth   { color: var(--purple); }
+  .sum-value.owed   { color: var(--red); }
+  .sum-value.bal    { font-size: 12px; font-family: 'DM Sans', sans-serif; }
+  .sum-value.sq     { color: var(--green); }
+  .sum-value.amber  { color: var(--amber); }
+
+  /* ── Toast ── */
+  .toast {
+    position: fixed; bottom: 80px; left: 50%;
+    transform: translateX(-50%) translateY(10px);
+    background: var(--dark); color: #f9fafb;
+    font-size: 13px; font-weight: 500; padding: 10px 20px;
+    border-radius: 10px; box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    opacity: 0; transition: opacity 0.2s, transform 0.2s;
+    pointer-events: none; z-index: 200; white-space: nowrap;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+  <div class="header-inner">
+    <div>
+      <div class="header-eyebrow">Trip Planner · Japan 2025</div>
+      <div class="header-title">🇯🇵 JAPAN 2025</div>
+      <div class="header-sub">Joe &amp; Beth · 25 April – 10 May · 16 days</div>
+    </div>
+    <div class="header-chips">
+      <div class="header-chip">
+        <div class="chip-label">Days Planned</div>
+        <div class="chip-value" id="hdr-planned">0/16</div>
+      </div>
+      <div class="header-chip">
+        <div class="chip-label">Total Cost</div>
+        <div class="chip-value green" id="hdr-total">$0.00</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Toolbar -->
+<div class="toolbar">
+  <div class="toolbar-inner">
+    <button class="toolbar-btn primary" onclick="exportJSON()">⬇ Export JSON</button>
+    <button class="toolbar-btn" onclick="document.getElementById('import-file').click()">⬆ Import JSON</button>
+    <input type="file" id="import-file" accept=".json" style="display:none" onchange="importJSON(event)">
+  </div>
+</div>
+
+<!-- Day cards -->
+<div class="main" id="days-container"></div>
+
+<!-- Summary bar -->
+<div class="summary-bar">
+  <div class="sum-item"><div class="sum-label">Total Trip</div><div class="sum-value total" id="sum-total">$0.00</div></div>
+  <div class="sum-divider"></div>
+  <div class="sum-item"><div class="sum-label">Joe Paid</div><div class="sum-value joe" id="sum-joe">$0.00</div></div>
+  <div class="sum-divider"></div>
+  <div class="sum-item"><div class="sum-label">Beth Paid</div><div class="sum-value beth" id="sum-beth">$0.00</div></div>
+  <div class="sum-divider"></div>
+  <div class="sum-item"><div class="sum-label">Still Owed</div><div class="sum-value owed" id="sum-owed">$0.00</div></div>
+  <div class="sum-divider"></div>
+  <div class="sum-item"><div class="sum-label">Balance</div><div class="sum-value bal sq" id="sum-bal">All square ✓</div></div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ── Config ──────────────────────────────────────────────────────────────────
+const TRIP_START  = new Date('2025-04-25');
+const TOTAL_DAYS  = 16;
+const STORAGE_KEY = 'japan-planner-v4';
+
+const DAYS = Array.from({ length: TOTAL_DAYS }, (_, i) => {
+  const d = new Date(TRIP_START);
+  d.setDate(d.getDate() + i);
+  return {
+    index:   i,
+    short:   d.toLocaleDateString('en-AU', { weekday: 'short' }).toUpperCase(),
+    dayNum:  d.getDate(),
+    month:   d.toLocaleDateString('en-AU', { month: 'short' }).toUpperCase(),
+    full:    d.toLocaleDateString('en-AU', { weekday: 'long', day: 'numeric', month: 'long' }),
+    display: d.toLocaleDateString('en-AU', { day: 'numeric', month: 'long', year: 'numeric' }).toUpperCase(),
+  };
+});
+
+const CATS = {
+  transport:     { label: 'Transport', color: '#3b82f6' },
+  accommodation: { label: 'Stay',      color: '#8b5cf6' },
+  activity:      { label: 'Activity',  color: '#10b981' },
+};
+
+// ── State ───────────────────────────────────────────────────────────────────
+let state = { days: DAYS.map(d => ({ index: d.index, city: '', entries: [], _collapsed: false })) };
+
+const uid = () => Math.random().toString(36).slice(2);
+const fmt = n  => `$${(+n || 0).toFixed(2)}`;
+const esc = s  => (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+
+// ── Persistence ─────────────────────────────────────────────────────────────
+function saveState() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); } catch {}
+}
+function loadState() {
+  try {
+    const s = localStorage.getItem(STORAGE_KEY);
+    if (s) {
+      const parsed = JSON.parse(s);
+      // Merge saved data over defaults so new days always exist
+      if (parsed.days) {
+        parsed.days.forEach(saved => {
+          const idx = state.days.findIndex(d => d.index === saved.index);
+          if (idx !== -1) state.days[idx] = { ...state.days[idx], ...saved };
+        });
+      }
+    }
+  } catch {}
+}
+
+// ── Export / Import ──────────────────────────────────────────────────────────
+function exportJSON() {
+  const blob = new Blob([JSON.stringify(state, null, 2)], { type: 'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'japan-trip-2025.json';
+  a.click();
+  URL.revokeObjectURL(a.href);
+  showToast('✓ Exported successfully');
+}
+function importJSON(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    try {
+      const parsed = JSON.parse(ev.target.result);
+      if (parsed.days && Array.isArray(parsed.days)) {
+        state = parsed;
+        saveState();
+        render();
+        showToast('✓ Imported successfully');
+      } else {
+        showToast('⚠ Invalid file format');
+      }
+    } catch { showToast('⚠ Could not parse file'); }
+  };
+  reader.readAsText(file);
+  e.target.value = '';
+}
+
+// ── Toast ────────────────────────────────────────────────────────────────────
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2400);
+}
+
+// ── Helpers ──────────────────────────────────────────────────────────────────
+function getDay(i)    { return state.days.find(d => d.index === i); }
+function setDay(day)  { state.days = state.days.map(d => d.index === day.index ? day : d); saveState(); }
+function getEntry(di, eid) { return getDay(di).entries.find(e => e.id === eid); }
+function setEntry(di, entry) {
+  const day = getDay(di);
+  day.entries = day.entries.map(e => e.id === entry.id ? entry : e);
+  setDay(day);
+}
+
+// ── Render ───────────────────────────────────────────────────────────────────
+function render() {
+  const container = document.getElementById('days-container');
+  container.innerHTML = '';
+  state.days.forEach(day => container.appendChild(buildDayCard(day.index)));
+  updateSummary();
+}
+
+function refreshDayCard(di) {
+  const container = document.getElementById('days-container');
+  const old = document.getElementById(`day-${di}`);
+  if (old) container.replaceChild(buildDayCard(di), old);
+  updateSummary();
+}
+
+// ── Day card ──────────────────────────────────────────────────────────────────
+function buildDayCard(di) {
+  const day  = getDay(di);
+  const info = DAYS[di];
+  const total = day.entries.reduce((s, e) => s + (+e.price || 0), 0);
+  const collapsed = !!day._collapsed;
+
+  const card = document.createElement('div');
+  card.className = 'day-card' + (collapsed ? ' collapsed' : '');
+  card.id = `day-${di}`;
+
+  // ── Header
+  const hdr = document.createElement('div');
+  hdr.className = 'day-header';
+  hdr.innerHTML = `
+    <div class="day-header-left">
+      <div class="day-chip-row">
+        <span class="day-chip">Day ${di + 1}</span>
+        <span class="day-date">${info.display}</span>
+      </div>
+      <input class="day-city-input" placeholder="Add city or area..." value="${esc(day.city)}" />
+    </div>
+    <div class="day-header-right">
+      ${total > 0 ? `<div class="day-total">${fmt(total)}</div>` : ''}
+      <button class="add-btn" title="Add entry">+</button>
+      <div class="collapse-arrow">▾</div>
+    </div>`;
+
+  hdr.querySelector('.day-city-input').addEventListener('click', e => e.stopPropagation());
+  hdr.querySelector('.day-city-input').addEventListener('input', e => {
+    const d = getDay(di); d.city = e.target.value; setDay(d); updateSummary();
+  });
+  hdr.querySelector('.add-btn').addEventListener('click', e => {
+    e.stopPropagation(); addEntry(di);
+  });
+  hdr.addEventListener('click', () => toggleCollapse(di));
+  card.appendChild(hdr);
+
+  // ── Body
+  const body = document.createElement('div');
+  body.className = 'day-body';
+  body.id = `day-body-${di}`;
+  body.style.display = collapsed ? 'none' : 'block';
+
+  if (day.entries.length === 0) {
+    body.innerHTML = '<div class="free-day-msg">Free day — nothing planned yet</div>';
+  } else {
+    day.entries.forEach(entry => body.appendChild(buildEntryRow(di, entry.id)));
+  }
+
+  // Footer
+  const footer = document.createElement('div');
+  footer.className = 'day-footer';
+  footer.innerHTML = `
+    <div class="legend">
+      <div class="legend-item"><div class="legend-dot" style="background:#3b82f6"></div><span class="legend-label">Joe</span></div>
+      <div class="legend-item"><div class="legend-dot" style="background:#8b5cf6"></div><span class="legend-label">Beth</span></div>
+    </div>
+    <button class="ghost-btn" id="add-footer-${di}">+ Add entry</button>`;
+  footer.querySelector(`#add-footer-${di}`).addEventListener('click', () => addEntry(di));
+  body.appendChild(footer);
+  card.appendChild(body);
+
+  return card;
+}
+
+// ── Entry row ─────────────────────────────────────────────────────────────────
+function buildEntryRow(di, eid) {
+  const entry  = getEntry(di, eid);
+  const cat    = CATS[entry.category];
+  const isPaid = entry.joePaid || entry.bethPaid;
+
+  const row = document.createElement('div');
+  row.className = 'entry-row' + (isPaid ? ' paid-row' : '');
+  row.id = `entry-${eid}`;
+
+  const main = document.createElement('div');
+  main.className = 'entry-main';
+  main.innerHTML = `
+    <div class="checkboxes">
+      <div class="check-box joe ${entry.joePaid ? 'checked':''}" data-who="joe" title="Joe paid">
+        <svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="check-box beth ${entry.bethPaid ? 'checked':''}" data-who="beth" title="Beth paid">
+        <svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+    </div>
+    <div style="display:flex;align-items:center;gap:5px;flex-shrink:0;">
+      <div class="cat-dot" style="background:${cat.color}"></div>
+      <select class="cat-select" style="color:${cat.color}">
+        ${Object.entries(CATS).map(([k,v])=>`<option value="${k}"${entry.category===k?' selected':''}>${v.label}</option>`).join('')}
+      </select>
+    </div>
+    <div class="vdivider"></div>
+    <input class="entry-name" placeholder="Description..." value="${esc(entry.name)}" />
+    <div class="price-wrap">
+      <span class="price-prefix">A$</span>
+      <input class="entry-price" type="number" min="0" step="0.01" placeholder="0.00" value="${entry.price||''}">
+    </div>
+    <div class="entry-actions">
+      ${isPaid ? '<span class="paid-badge">✓ paid</span>' : ''}
+      <button class="micro-btn notes-toggle">${entry.notes ? '− notes' : '+ notes'}</button>
+      <button class="del-btn" title="Remove">×</button>
+    </div>`;
+
+  // Checkboxes
+  main.querySelectorAll('.check-box').forEach(cb => {
+    cb.addEventListener('click', () => {
+      const e = getEntry(di, eid);
+      const field = cb.dataset.who === 'joe' ? 'joePaid' : 'bethPaid';
+      e[field] = !e[field];
+      setEntry(di, e);
+      refreshDayCard(di);
+      updateSummary();
+    });
+  });
+
+  // Category
+  main.querySelector('.cat-select').addEventListener('change', ev => {
+    const e = getEntry(di, eid); e.category = ev.target.value; setEntry(di, e);
+    refreshDayCard(di);
+  });
+
+  // Name
+  main.querySelector('.entry-name').addEventListener('input', ev => {
+    const e = getEntry(di, eid); e.name = ev.target.value; setEntry(di, e); updateSummary();
+  });
+
+  // Price
+  main.querySelector('.entry-price').addEventListener('input', ev => {
+    const e = getEntry(di, eid); e.price = ev.target.value; setEntry(di, e); updateSummary();
+  });
+
+  // Notes toggle
+  main.querySelector('.notes-toggle').addEventListener('click', () => {
+    const na = row.querySelector('.notes-area');
+    const visible = na.classList.toggle('visible');
+    main.querySelector('.notes-toggle').textContent = visible ? '− notes' : '+ notes';
+  });
+
+  // Delete
+  main.querySelector('.del-btn').addEventListener('click', () => {
+    const d = getDay(di);
+    d.entries = d.entries.filter(e => e.id !== eid);
+    setDay(d);
+    refreshDayCard(di);
+    updateSummary();
+  });
+
+  row.appendChild(main);
+
+  // Notes
+  const na = document.createElement('textarea');
+  na.className = 'notes-area' + (entry.notes ? ' visible' : '');
+  na.rows = 2;
+  na.placeholder = 'Notes, booking ref, confirmation number...';
+  na.value = entry.notes || '';
+  na.addEventListener('input', ev => {
+    const e = getEntry(di, eid); e.notes = ev.target.value; setEntry(di, e);
+  });
+  row.appendChild(na);
+
+  return row;
+}
+
+// ── Interactions ──────────────────────────────────────────────────────────────
+function toggleCollapse(di) {
+  const day = getDay(di);
+  day._collapsed = !day._collapsed;
+  setDay(day);
+  const card = document.getElementById(`day-${di}`);
+  const body = document.getElementById(`day-body-${di}`);
+  card.classList.toggle('collapsed', day._collapsed);
+  body.style.display = day._collapsed ? 'none' : 'block';
+}
+
+function addEntry(di) {
+  const day = getDay(di);
+  // Expand if collapsed
+  if (day._collapsed) { day._collapsed = false; setDay(day); }
+  day.entries.push({
+    id: uid(), category: 'activity', name: '', price: '',
+    joePaid: false, bethPaid: false, notes: '',
+  });
+  setDay(day);
+  refreshDayCard(di);
+  updateSummary();
+}
+
+// ── Summary ───────────────────────────────────────────────────────────────────
+function updateSummary() {
+  const all   = state.days.flatMap(d => d.entries);
+  const total = all.reduce((s, e) => s + (+e.price || 0), 0);
+  const joe   = all.filter(e => e.joePaid).reduce((s, e) => s + (+e.price || 0), 0);
+  const beth  = all.filter(e => e.bethPaid).reduce((s, e) => s + (+e.price || 0), 0);
+  const owed  = Math.max(0, total - joe - beth);
+  const diff  = joe - beth;
+  const bal   = diff === 0
+    ? 'All square ✓'
+    : diff > 0
+      ? `Beth owes Joe ${fmt(Math.abs(diff) / 2)}`
+      : `Joe owes Beth ${fmt(Math.abs(diff) / 2)}`;
+  const planned = state.days.filter(d => d.entries.length > 0).length;
+
+  document.getElementById('sum-total').textContent   = fmt(total);
+  document.getElementById('sum-joe').textContent     = fmt(joe);
+  document.getElementById('sum-beth').textContent    = fmt(beth);
+  document.getElementById('sum-owed').textContent    = fmt(owed);
+  document.getElementById('hdr-planned').textContent = `${planned}/${TOTAL_DAYS}`;
+  document.getElementById('hdr-total').textContent   = fmt(total);
+
+  const balEl = document.getElementById('sum-bal');
+  balEl.textContent = bal;
+  balEl.className   = `sum-value bal ${diff === 0 ? 'sq' : 'amber'}`;
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+loadState();
+render();
+</script>
+</body>
+</html>
