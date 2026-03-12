@@ -421,16 +421,22 @@ const TRIP_START  = new Date('2025-04-25');
 const TOTAL_DAYS  = 16;
 const STORAGE_KEY = 'japan-planner-v4';
 
+const WEEKDAYS  = ['SUN','MON','TUE','WED','THU','FRI','SAT'];
+const WEEKDAYS_FULL = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+const MONTHS    = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const MONTHS_FULL = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+
 const DAYS = Array.from({ length: TOTAL_DAYS }, (_, i) => {
   const d = new Date(TRIP_START);
   d.setDate(d.getDate() + i);
+  const wd = d.getDay(), day = d.getDate(), mo = d.getMonth(), yr = d.getFullYear();
   return {
     index:   i,
-    short:   d.toLocaleDateString('en-AU', { weekday: 'short' }).toUpperCase(),
-    dayNum:  d.getDate(),
-    month:   d.toLocaleDateString('en-AU', { month: 'short' }).toUpperCase(),
-    full:    d.toLocaleDateString('en-AU', { weekday: 'long', day: 'numeric', month: 'long' }),
-    display: d.toLocaleDateString('en-AU', { day: 'numeric', month: 'long', year: 'numeric' }).toUpperCase(),
+    short:   WEEKDAYS[wd],
+    dayNum:  day,
+    month:   MONTHS[mo],
+    full:    WEEKDAYS_FULL[wd] + ', ' + day + ' ' + MONTHS_FULL[mo],
+    display: (day + ' ' + MONTHS_FULL[mo] + ' ' + yr).toUpperCase(),
   };
 });
 
@@ -825,7 +831,7 @@ Look at the city changes across the trip and add realistic transport entries (Sh
     color: '#fff7ed',
     iconBg: '#fed7aa',
     title: 'Add accommodation for all nights',
-    desc: 'Adds a hotel or ryokan stay entry for every night that doesn't have one.',
+    desc: 'Adds a hotel or ryokan stay entry for every night that doesn\'t have one.',
     build: () => `You are a Japan travel expert. Here is Joe & Beth's trip itinerary:
 
 ${buildTripSummary()}
@@ -833,7 +839,7 @@ ${buildTripSummary()}
 Full JSON:
 ${buildCurrentJSON()}
 
-For any day that doesn't already have an accommodation entry, add a suitable hotel or ryokan recommendation with a realistic AUD price for that city. Return the COMPLETE updated JSON only — no explanation, no markdown fences.`
+For any day that doesn\'t already have an accommodation entry, add a suitable hotel or ryokan recommendation with a realistic AUD price for that city. Return the COMPLETE updated JSON only — no explanation, no markdown fences.`
   },
   {
     icon: '🍜',
@@ -972,8 +978,16 @@ function renderPrompts() {
 }
 
 // ── Init ──────────────────────────────────────────────────────────────────────
-loadState();
-render();
+document.addEventListener('DOMContentLoaded', function() {
+  try {
+    loadState();
+    render();
+  } catch(e) {
+    console.error('Init error:', e);
+    document.getElementById('days-container').innerHTML =
+      '<div style="padding:40px;text-align:center;color:#9ca3af;font-family:monospace">Error loading planner: ' + e.message + '</div>';
+  }
+});
 </script>
 </body>
 </html>
