@@ -272,6 +272,81 @@
     from { opacity: 0; transform: translateY(6px); }
     to   { opacity: 1; transform: translateY(0); }
   }
+
+  /* ── Tabs ── */
+  .tab-bar {
+    background: var(--dark2); border-top: 1px solid #2d3748;
+    padding: 0 24px; display: flex; align-items: stretch; gap: 0;
+  }
+  .tab-bar-inner { max-width: 860px; margin: 0 auto; display: flex; gap: 0; align-items: stretch; flex: 1; }
+  .tab-btn {
+    background: transparent; border: none; border-bottom: 2px solid transparent;
+    color: #6b7280; cursor: pointer; font-size: 12px; font-weight: 500;
+    letter-spacing: 0.04em; padding: 12px 18px; transition: all 0.15s;
+    white-space: nowrap; text-transform: uppercase;
+    font-family: 'DM Mono', monospace;
+  }
+  .tab-btn:hover { color: #d1d5db; }
+  .tab-btn.active { color: #f9fafb; border-bottom-color: var(--blue); }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* ── Toolbar (import/export) ── */
+  .toolbar { background: var(--dark2); padding: 10px 24px; border-top: 1px solid #1a2332; }
+  .toolbar-inner { max-width: 860px; margin: 0 auto; display: flex; gap: 8px; align-items: center; }
+
+  /* ── Prompt builder ── */
+  .prompt-main { max-width: 860px; margin: 0 auto; padding: 24px 16px 100px; }
+  .prompt-intro {
+    background: var(--white); border-radius: var(--radius);
+    padding: 20px 24px; margin-bottom: 20px;
+    box-shadow: var(--shadow-sm);
+    font-size: 14px; color: var(--gray1); line-height: 1.7;
+  }
+  .prompt-intro strong { color: var(--dark); }
+  .prompt-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  @media (max-width: 600px) { .prompt-grid { grid-template-columns: 1fr; } }
+  .prompt-card {
+    background: var(--white); border-radius: var(--radius);
+    box-shadow: var(--shadow-sm); overflow: hidden;
+    transition: box-shadow 0.2s;
+  }
+  .prompt-card:hover { box-shadow: var(--shadow-md); }
+  .prompt-card-header {
+    padding: 16px 20px 12px; border-bottom: 1.5px solid var(--gray5);
+    display: flex; align-items: flex-start; gap: 12px;
+  }
+  .prompt-icon {
+    width: 34px; height: 34px; border-radius: 9px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px; flex-shrink: 0;
+  }
+  .prompt-card-title { font-size: 14px; font-weight: 600; color: var(--dark); margin-bottom: 3px; }
+  .prompt-card-desc  { font-size: 12px; color: var(--gray2); line-height: 1.5; }
+  .prompt-card-body  { padding: 14px 20px 16px; }
+  .prompt-preview {
+    background: var(--gray6); border: 1.5px solid var(--border);
+    border-radius: 8px; padding: 12px 14px;
+    font-family: 'DM Mono', monospace; font-size: 11px;
+    color: var(--gray1); line-height: 1.65;
+    max-height: 120px; overflow: hidden;
+    position: relative; margin-bottom: 12px;
+    white-space: pre-wrap; word-break: break-word;
+  }
+  .prompt-preview::after {
+    content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 32px;
+    background: linear-gradient(transparent, var(--gray6));
+  }
+  .copy-btn {
+    width: 100%; padding: 9px;
+    background: var(--dark); border: none; border-radius: 8px;
+    color: #f9fafb; cursor: pointer; font-size: 12px; font-weight: 600;
+    letter-spacing: 0.04em; transition: background 0.15s;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .copy-btn:hover { background: var(--dark3); }
+  .copy-btn.copied { background: var(--green); }
+
 </style>
 </head>
 <body>
@@ -297,6 +372,14 @@
   </div>
 </div>
 
+<!-- Tab bar -->
+<div class="tab-bar">
+  <div class="tab-bar-inner">
+    <button class="tab-btn active" onclick="switchTab('itinerary', this)">📅 Itinerary</button>
+    <button class="tab-btn" onclick="switchTab('prompts', this)">✦ Prompt Builder</button>
+  </div>
+</div>
+
 <!-- Toolbar -->
 <div class="toolbar">
   <div class="toolbar-inner">
@@ -306,8 +389,15 @@
   </div>
 </div>
 
-<!-- Day cards -->
-<div class="main" id="days-container"></div>
+<!-- Itinerary tab -->
+<div class="tab-panel active" id="tab-itinerary">
+  <div class="main" id="days-container"></div>
+</div>
+
+<!-- Prompt Builder tab -->
+<div class="tab-panel" id="tab-prompts">
+  <div class="prompt-main" id="prompt-main"></div>
+</div>
 
 <!-- Summary bar -->
 <div class="summary-bar">
@@ -657,6 +747,228 @@ function updateSummary() {
   const balEl = document.getElementById('sum-bal');
   balEl.textContent = bal;
   balEl.className   = `sum-value bal ${diff === 0 ? 'sq' : 'amber'}`;
+}
+
+
+// ── Tabs ─────────────────────────────────────────────────────────────────────
+function switchTab(name, btn) {
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('tab-' + name).classList.add('active');
+  btn.classList.add('active');
+  if (name === 'prompts') renderPrompts();
+}
+
+// ── Prompt builder ────────────────────────────────────────────────────────────
+function buildTripSummary() {
+  const lines = [];
+  state.days.forEach(day => {
+    const info = DAYS[day.index];
+    const entries = day.entries.map(e =>
+      `    - [${CATS[e.category].label}] ${e.name || '(unnamed)'}${e.price ? ' — A$' + e.price : ''}${e.joePaid || e.bethPaid ? ' ✓ paid by ' + (e.joePaid ? 'Joe' : '') + (e.bethPaid ? (e.joePaid ? ' & ' : '') + 'Beth' : '') : ''}`
+    ).join('\n');
+    lines.push(`Day ${day.index + 1} — ${info.full}${day.city ? ' (' + day.city + ')' : ' (city TBD)'}\n${entries || '    (nothing planned yet)'}`);
+  });
+  return lines.join('\n\n');
+}
+
+function buildCurrentJSON() {
+  return JSON.stringify(state, null, 2);
+}
+
+const PROMPTS = [
+  {
+    icon: '🗓️',
+    color: '#eff6ff',
+    iconBg: '#dbeafe',
+    title: 'Fill in empty days',
+    desc: 'Suggests activities, transport and accommodation for days with nothing planned yet.',
+    build: () => `You are a Japan travel expert helping plan a trip for two people (Joe & Beth) travelling from Melbourne, Australia.
+
+Here is their current itinerary as JSON:
+${buildCurrentJSON()}
+
+Please fill in sensible activities, accommodation, and transport entries for any days that currently have no entries. Keep suggestions realistic, well-paced, and budget-conscious. For each new entry use this exact structure within the relevant day's "entries" array:
+{"id":"UNIQUE_ID","category":"activity|transport|accommodation","name":"...","price":"AUD amount as number","joePaid":false,"bethPaid":false,"notes":"any useful tip"}
+
+Return the COMPLETE updated JSON only — no explanation, no markdown fences. The JSON must be valid and match the same structure as the input.`
+  },
+  {
+    icon: '💰',
+    color: '#f0fdf4',
+    iconBg: '#dcfce7',
+    title: 'Estimate missing prices',
+    desc: 'Fills in realistic AUD price estimates for any entries that are missing a price.',
+    build: () => `You are a Japan travel expert. Below is a trip itinerary JSON for Joe & Beth travelling from Melbourne.
+
+${buildCurrentJSON()}
+
+For every entry where "price" is empty or "0", fill in a realistic estimated price in AUD based on typical costs in Japan in 2025. Do not change any other fields. Return the COMPLETE updated JSON only — no explanation, no markdown fences.`
+  },
+  {
+    icon: '🚅',
+    color: '#fdf4ff',
+    iconBg: '#f3e8ff',
+    title: 'Add transport between cities',
+    desc: 'Adds Shinkansen, bus or flight entries between each city change in the itinerary.',
+    build: () => `You are a Japan travel expert. Here is a trip itinerary for Joe & Beth:
+
+${buildTripSummary()}
+
+Full JSON:
+${buildCurrentJSON()}
+
+Look at the city changes across the trip and add realistic transport entries (Shinkansen, highway bus, domestic flight, etc.) on the appropriate travel days. Include estimated AUD prices. Return the COMPLETE updated JSON only — no explanation, no markdown fences.`
+  },
+  {
+    icon: '🏨',
+    color: '#fff7ed',
+    iconBg: '#fed7aa',
+    title: 'Add accommodation for all nights',
+    desc: 'Adds a hotel or ryokan stay entry for every night that doesn't have one.',
+    build: () => `You are a Japan travel expert. Here is Joe & Beth's trip itinerary:
+
+${buildTripSummary()}
+
+Full JSON:
+${buildCurrentJSON()}
+
+For any day that doesn't already have an accommodation entry, add a suitable hotel or ryokan recommendation with a realistic AUD price for that city. Return the COMPLETE updated JSON only — no explanation, no markdown fences.`
+  },
+  {
+    icon: '🍜',
+    color: '#fefce8',
+    iconBg: '#fef08a',
+    title: 'Add food & dining experiences',
+    desc: 'Suggests must-try restaurants, food markets and dining experiences for each city.',
+    build: () => `You are a Japan food and travel expert. Here is Joe & Beth's itinerary:
+
+${buildTripSummary()}
+
+Full JSON:
+${buildCurrentJSON()}
+
+Add 1–2 dining or food experience entries per day (e.g. ramen, izakaya, tsukiji market, conveyor belt sushi) that are well-suited to each city. Include realistic AUD price estimates per person x2. Return the COMPLETE updated JSON only — no explanation, no markdown fences.`
+  },
+  {
+    icon: '✂️',
+    color: '#fdf2f8',
+    iconBg: '#fbcfe8',
+    title: 'Trim & optimise the schedule',
+    desc: 'Removes duplicates, reorders entries logically and flags anything that looks over-scheduled.',
+    build: () => `You are a Japan travel expert reviewing an itinerary for Joe & Beth.
+
+${buildTripSummary()}
+
+Full JSON:
+${buildCurrentJSON()}
+
+Please:
+1. Remove any obvious duplicate entries
+2. Reorder entries within each day so they flow logically (transport first, accommodation last, activities in between)
+3. Flag any days that look over-scheduled in the "notes" field of the first entry
+4. Do not add or remove entries otherwise
+
+Return the COMPLETE updated JSON only — no explanation, no markdown fences.`
+  },
+  {
+    icon: '📋',
+    color: '#f0f9ff',
+    iconBg: '#bae6fd',
+    title: 'Generate a packing list',
+    desc: 'Creates a packing list based on your activities, cities and the time of year.',
+    build: () => `You are a Japan travel expert. Based on this itinerary for Joe & Beth travelling in late April to early May 2025:
+
+${buildTripSummary()}
+
+Generate a practical packing list grouped by category (Clothing, Documents, Electronics, Toiletries, Japan-specific items, etc.). Consider the weather (spring, cherry blossom season), the activities planned, and that they are flying from Melbourne. 
+
+Return as a clean plain-text list — no JSON needed for this one. Just the packing list, ready to copy.`
+  },
+  {
+    icon: '📝',
+    color: '#f8fafc',
+    iconBg: '#e2e8f0',
+    title: 'Custom prompt',
+    desc: 'Write your own instruction. Your current trip data will be appended automatically.',
+    custom: true,
+    build: (custom) => `${custom || '[Your instruction here]'}
+
+Here is the current trip JSON for context:
+${buildCurrentJSON()}
+
+Return the COMPLETE updated JSON only — no explanation, no markdown fences.`
+  },
+];
+
+function renderPrompts() {
+  const el = document.getElementById('prompt-main');
+  el.innerHTML = '';
+
+  // Intro
+  const intro = document.createElement('div');
+  intro.className = 'prompt-intro';
+  intro.innerHTML = `<strong>How it works:</strong> Each prompt below is pre-loaded with your current trip data. Click <strong>Copy Prompt</strong>, paste it into any AI (ChatGPT, Claude, Gemini, etc.), and it will return an updated JSON you can import back using the <strong>Import JSON</strong> button.`;
+  el.appendChild(intro);
+
+  const grid = document.createElement('div');
+  grid.className = 'prompt-grid';
+
+  PROMPTS.forEach((p, i) => {
+    const card = document.createElement('div');
+    card.className = 'prompt-card';
+
+    let customTextarea = '';
+    if (p.custom) {
+      customTextarea = `<textarea id="custom-prompt-text" placeholder="e.g. Add a day trip to Nikko on day 5..." style="width:100%;background:var(--gray6);border:1.5px solid var(--border);border-radius:8px;padding:10px 12px;font-size:12px;color:var(--dark);resize:vertical;min-height:72px;font-family:'DM Sans',sans-serif;margin-bottom:12px;outline:none;"></textarea>`;
+    }
+
+    card.innerHTML = `
+      <div class="prompt-card-header">
+        <div class="prompt-icon" style="background:${p.iconBg}">${p.icon}</div>
+        <div>
+          <div class="prompt-card-title">${p.title}</div>
+          <div class="prompt-card-desc">${p.desc}</div>
+        </div>
+      </div>
+      <div class="prompt-card-body">
+        ${p.custom ? customTextarea : `<div class="prompt-preview" id="preview-${i}">${esc(p.build().substring(0, 300))}</div>`}
+        <button class="copy-btn" id="copy-btn-${i}">Copy Prompt</button>
+      </div>`;
+
+    card.querySelector(`#copy-btn-${i}`).addEventListener('click', function() {
+      let text;
+      if (p.custom) {
+        const customVal = document.getElementById('custom-prompt-text')?.value || '';
+        text = p.build(customVal);
+      } else {
+        text = p.build();
+      }
+      navigator.clipboard.writeText(text).then(() => {
+        this.textContent = '✓ Copied!';
+        this.classList.add('copied');
+        setTimeout(() => {
+          this.textContent = 'Copy Prompt';
+          this.classList.remove('copied');
+        }, 2000);
+      }).catch(() => {
+        // Fallback for browsers that block clipboard
+        const ta = document.createElement('textarea');
+        ta.value = text;
+        ta.style.position = 'fixed'; ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select(); document.execCommand('copy');
+        document.body.removeChild(ta);
+        this.textContent = '✓ Copied!';
+        this.classList.add('copied');
+        setTimeout(() => { this.textContent = 'Copy Prompt'; this.classList.remove('copied'); }, 2000);
+      });
+    });
+
+    grid.appendChild(card);
+  });
+
+  el.appendChild(grid);
 }
 
 // ── Init ──────────────────────────────────────────────────────────────────────
